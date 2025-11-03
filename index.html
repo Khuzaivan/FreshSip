@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreshSip — Pesan via WhatsApp</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+    body{margin:0;background:#f7f7f9;color:#222;display:flex;align-items:center;justify-content:center;min-height:100vh}
+    .card{width:min(700px,94%);background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.08);padding:28px}
+    header{display:flex;gap:16px;align-items:center}
+    .logo{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#6b8f5a,#2f9d78);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px}
+    h1{margin:0;font-size:20px}
+    p.lead{color:#555;margin-top:8px}
+    .variants{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:18px}
+    .variant{padding:12px;border-radius:10px;border:1px solid #eee;display:flex;flex-direction:column;gap:8px}
+    .variant button{padding:10px;border-radius:8px;border:0;background:#25d366;color:#fff;font-weight:600;cursor:pointer}
+    .cta{display:flex;gap:10px;align-items:center;margin-top:18px}
+    .small{font-size:13px;color:#666;text-align:center;}
+    footer{margin-top:18px;font-size:13px;color:#888}
+    @media (prefers-color-scheme:dark){body{background:#0b0d10;color:#e6eef6}.card{background:#071023;box-shadow:none}.variant{border:1px solid rgba(255,255,255,0.04)}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <header>
+      <div class="logo">FS</div>
+      <div>
+        <h1>FreshSip — Pesan via WhatsApp</h1>
+        <p class="lead">Klik varian yang kamu mau, lalu pilih jumlah. Kami akan membuka WhatsApp untuk menyelesaikan pesanan.</p>
+      </div>
+    </header>
+
+    <div style="margin-top:14px">
+      <label class="small">Pilih varian rasa:</label>
+      <div class="variants">
+        <div class="variant">
+          <strong>Matcha</strong>
+          <span class="small">Rasa matcha asli segar</span>
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+            <input type="number" min="1" value="1" class="qty" data-variant="Matcha" style="width:72px;padding:8px;border-radius:8px;border:1px solid #eee"/>
+            <button class="buy" data-variant="Matcha">Pesan via WA</button>
+          </div>
+        </div>
+
+        <div class="variant">
+          <strong>Matcha Latte</strong>
+          <span class="small">Kombinasi matcha dan susu lembut</span>
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+            <input type="number" min="1" value="1" class="qty" data-variant="Matcha Latte" style="width:72px;padding:8px;border-radius:8px;border:1px solid #eee"/>
+            <button class="buy" data-variant="Matcha Latte">Pesan via WA</button>
+          </div>
+        </div>
+
+        <div class="variant">
+          <strong>Hazelnut</strong>
+          <span class="small">Rasa kacang hazelnut yang harum</span>
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+            <input type="number" min="1" value="1" class="qty" data-variant="Hazelnut" style="width:72px;padding:8px;border-radius:8px;border:1px solid #eee"/>
+            <button class="buy" data-variant="Hazelnut">Pesan via WA</button>
+          </div>
+        </div>
+
+        <div class="variant">
+          <strong>Choco Hazelnut</strong>
+          <span class="small">Perpaduan cokelat dan hazelnut yang nikmat</span>
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+            <input type="number" min="1" value="1" class="qty" data-variant="Choco Hazelnut" style="width:72px;padding:8px;border-radius:8px;border:1px solid #eee"/>
+            <button class="buy" data-variant="Choco Hazelnut">Pesan via WA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <div class="small">Atau pakai link langsung:</div>
+      <a id="directLink" href="#" target="_blank" rel="noopener noreferrer" style="text-decoration:none;padding:10px 14px;border-radius:10px;border:1px solid #25d366;color:#25d366;font-weight:600">Buka WhatsApp</a>
+    </div>
+
+    <footer>
+      <div class="small">Terima kasih sudah mengunjungi web ini.</div>
+    </footer>
+  </div>
+
+  <script>
+    const phone = '6281222726808'; // nomor WhatsApp kamu
+
+    function buildMessage(variant, qty){
+      return `Halo FreshSip! Saya mau pesan ${qty} cup *${variant}*.\nNama:\nLokasi ambil:\nCatatan:`;
+    }
+
+    function openWhatsApp(phone, text){
+      const encoded = encodeURIComponent(text);
+      const url = `https://wa.me/${phone}?text=${encoded}`;
+      window.open(url, '_blank');
+    }
+
+    document.querySelectorAll('.buy').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const variant = btn.dataset.variant;
+        const parent = btn.closest('.variant');
+        const qtyInput = parent.querySelector('.qty');
+        let qty = parseInt(qtyInput.value) || 1;
+        if(qty < 1) qty = 1;
+
+        const text = buildMessage(variant, qty);
+        openWhatsApp(phone, text);
+      });
+    });
+
+    const defaultMsg = encodeURIComponent('Halo FreshSip, saya mau pesan.');
+    const directHref = `https://wa.me/${phone}?text=${defaultMsg}`;
+    document.getElementById('directLink').href = directHref;
+  </script>
+</body>
+</html>
